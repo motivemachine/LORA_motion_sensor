@@ -7,7 +7,7 @@ These are the kicad PCB and software files for the LoRa motion sensor, a wireles
 Only dependency is the LoRa radio library by Sandeep Mistry, included in _/firmware/lib/_
 
 ### Software usage
-Software was created and compiled with PlatformIO, but is usable by any arduino compatible IDE by compiling the program located in _/firmware/src_ as an arduino pro mini 3.3v/8mhz. Upload is done over ISP header.
+Software was created and compiled with PlatformIO, but is usable by any arduino compatible IDE by compiling the program located in _/firmware/src_ as an arduino pro mini 3.3v/8mhz. Upload is done over ISP header. Be careful that programming signals are 3.3 volts, as the LoRa radio is not 5v tolerant.
 
 ### Using the device
 Simply turn it on and place in an area you'd like to monitor. Choke points are best, such as near a gate, pathway, doorway or vehicle. The sensor works by detecting a phase change in it's 3Ghz oscillator and waking up the processor and radio, then sending the packet 'MOT' via LoRa radio protocol, along with packet and radio ID number.
@@ -16,13 +16,15 @@ Sensor range is about 20-30ft out the front and back, and less to the sides. Ran
 
 The best documentation on the function and use of this sensor can be found here: (https://github.com/jdesbonnet/RCWL-0516)
 
-The only critical part of placing it is near metal. Any metal closer than about 2" to the sensor will cause it to go off constantly.
+The only critical part of placing it is near metal or another sensor. Any metal closer than about 2" to the sensor will cause it to go off constantly, and the sensors will interfere with each other closer than about 10feet(~3meters)
 
 Testing is still ongoing, but the device is mostly feature complete. Sleep modes on the radio and ATmega are getting about two weeks (depending on number of wakeups) on a single 18650 battery.  
 
 ### Still todo
 
+- [ ] program CRC and collision detection functions
+- [ ] update and test boards with low-battery alert functions
 - [x] upload platformio files
-- [ ] upload .png's of schematic
+- [x] upload .pdf of schematic
 - [ ] generate and upload a proper BOM
-- [ ] upload
+

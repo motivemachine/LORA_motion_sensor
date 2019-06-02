@@ -28,8 +28,8 @@ byte destination = 0x25;
 
 String const motAlert = "MOT";
 
-int volatile battVolt; //ADC reading of battery voltage, through a 100k-100k voltage divider
-bool volatile battlow = false; // a variable to pass to the motion alert interrupt. It will append a message that the battery is low if it is below 10%
+int battVolt; //ADC reading of battery voltage, through a 100k-100k voltage divider
+bool battlow = false; // a variable to pass to the motion alert interrupt. It will append a message that the battery is low if it is below 10%
 
 void getaddr()           //read dip switches to determine device address on startup
   {
@@ -68,9 +68,7 @@ void motion_alert() //Send the motion detected message.
     {
       errorBlink();
     }
-
   }
-
 
 void sleepNow()
   {
@@ -85,10 +83,10 @@ void sleepNow()
    //sleep_mode();            // here the device is actually put to sleep.
   }
 
-void batteryvoltage() // get a read on the battery level, convert to percentage and set batt_low flag if it is below 10%
+void batteryVoltage() // get a read on the battery level, convert to percentage and set batt_low flag if it is below 10%
 {
   //Serial.println("Battery Voltage function");
-  battVolt = analogRead(A0) * 2; //battery level as read through the 100k-100k voltage divider
+  battVolt = analogRead(chrg_lvl) * 2; //battery level as read through the 100k-100k voltage divider
   //Serial.print("Divider is: "); Serial.println(divider);
   if (battVolt <= 800) {battlow = true;} // Low battery will probably be around 3.1 volts, but we'll set this flag when the battery is just slightly drained for testing purposes
   else {battlow = false;}
@@ -112,8 +110,6 @@ void batteryvoltage() // get a read on the battery level, convert to percentage 
 
 
 void setup() {
-  //Serial.begin(9600);
-  //Serial.println("starting program");
   LoRa.setPins(csPin, resetPin, irqPin);
 
   pinMode(chrg_lvl, INPUT);
@@ -127,9 +123,9 @@ void setup() {
     delay(50);
   }
 
-  //pinMode(jumpone, INPUT_PULLUP);
-  //pinMode(jumptwo, INPUT_PULLUP);
-  //pinMode(jumpthree, INPUT_PULLUP);
+  pinMode(jumpone, INPUT_PULLUP);
+  pinMode(jumptwo, INPUT_PULLUP);
+  pinMode(jumpthree, INPUT_PULLUP);
   getaddr(); //get the address set for the LORA radio
 
   pinMode(motionPin, INPUT); //has external pulldown resistor
@@ -137,7 +133,7 @@ void setup() {
   if (!LoRa.begin(430E6)) {
     errorBlink();
   }
-  batteryvoltage();
+  batteryVoltage(); //temporary to give an idea of battery power on startup
   batteryAlert();
   delay(8000);   //Wait a bit after startup for user to move out of the way
 
@@ -147,14 +143,15 @@ void setup() {
 void loop() {
   delay(100);
   sleepNow(); // no more motion detected. Going to sleep
-  //delay(100);
   while (digitalRead(motionPin) == HIGH) //after waking up and sending the motion packet, check again for motion. If the sensor pin is still high, don't go back to sleep- send another packet!
   {
     digitalWrite(led, HIGH);            //you can turn on the LED here if you wish for testing the motion sensor.
     motion_alert();
+    batteryVoltage();
+    batteryAlert();                     // battery alert will only happen when low eventually. Transmit every time for now to get an idea of battery discharge profile.
     delay(wakedelay);
     digitalWrite(led, LOW);
   }
-  //batteryvoltage();
+  //batteryvoltage();                  // check battery voltage. if below threshold, send low voltage alert.
   //if (battlow == true){batteryAlert();}
 }
