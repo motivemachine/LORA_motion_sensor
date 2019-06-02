@@ -4,7 +4,7 @@ These are the kicad PCB and software files for the LoRa motion sensor, a wireles
 ![sensorrender](/hardware/LORA_motionsensor.png)
 
 ### Dependencies
-Only dependency is the LoRa radio library by Sandeep Mistry, included in _/firmware/lib/_
+Only dependency is the LoRa radio library by [Sandeep Mistry](https://github.com/sandeepmistry/arduino-LoRa), included in _/firmware/lib/_
 
 ### Software usage
 Software was created and compiled with PlatformIO, but is usable by any arduino compatible IDE by compiling the program located in _/firmware/src_ as an arduino pro mini 3.3v/8mhz. Upload is done over ISP header. Be careful that programming signals are 3.3 volts, as the LoRa radio is not 5v tolerant.
@@ -23,6 +23,7 @@ Testing is still ongoing, but the device is mostly feature complete. Sleep modes
 ### Still todo
 
 - [ ] program CRC and collision detection functions
+- [ ] write functions for setting destination and local HEX address with switches or solder jumpers
 - [ ] update and test boards with low-battery alert functions
 - [x] upload platformio files
 - [x] upload .pdf of schematic
